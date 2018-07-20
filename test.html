@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+        <meta name="description" content="Blog : " />
+
+        <link rel="stylesheet" type="text/css" media="screen" href="/blog/stylesheets/stylesheet.css">
+		<!--
+		<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+        <script type="text/javascript"
+                src="/blog/third-party-depend/MathJax-2.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+		-->
+
+        <script type="text/javascript"
+                src="/blog/third-party-depend/MathJax-2.6/MathJax.js?config=default"></script>
+
+        <title>线性回归costFunction计算和梯度下降算法更新公式</title>
+
+    </head>
+
+    <body>
+
+        <!-- HEADER -->
+        <div id="header_wrap" class="outer">
+            <header class="inner">
+              <h1 id="project_title">邢永涛的博客</h1>
+              <h2 id="project_tagline"></h2>
+            </header>
+        </div>
+    
+        <!-- MAIN CONTENT -->
+        <div id="main_content_wrap" class="outer">
+          <section id="main_content" class="inner">
+            <h1 id="机器学习线性回归costfunction计算和梯度下降算法更新公式">[机器学习]线性回归costFunction计算和梯度下降算法更新公式</h1>
+
+<p>这是斯坦福的机器学习课程学习笔记。</p>
+
+<p>课后练习题里有Octave/MATLAB编程，其中涉及到costFunction的计算，课程中一再强调要同时更新参数\(\theta_j\),虽然课程中使用的是循环更新的方法，但是很明显MATLAB应该采用矩阵运算的方式，这样就不不必关心样本个数和特征维数了，所以有必要把矩阵的写法推导一下。</p>
+
+<p>线性回归的\(J(\theta)\)计算比较简单：</p>
+
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{2m}\sum\_{i=1}^m{(h\_\theta(x^{(i)})-y^{(i)})^2}</script>
+
+<p>是一个矢量和自己转置相乘,</p>
+
+<p>令</p>
+
+<script type="math/tex; mode=display">\delta=h\_\theta(X)-y=
+\begin{bmatrix}
+h\_\theta(x^{(1)})-y^{(1)} \\\\
+h\_\theta(x^{(2)})-y^{(2)} \\\\
+\vdots \\\\
+h\_\theta(x^{(i)})-y^{(i)} \\\\
+\vdots \\\\
+h\_\theta(x^{(m)})-y^{(m)} 
+\end{bmatrix}</script>
+
+<p>则
+<script type="math/tex">J(\theta)=\frac{1}{2m}\delta^T\delta</script></p>
+
+<p>其中\(X\)是所有样本的特征，是\(m×(n+1)\)的矩阵，即\(X \in \mathbb{R}^{m×(n+1)}\)。\(h_\theta(X)\)和\(y\)都是\(m×1\)的向量，所以\(\delta\)也是\(m×1\)的向量。\(J(\theta)\)是一个实数。</p>
+
+<p>写成MATLAB程序，大概是这个样子的：</p>
+
+<figure class="highlight"><pre><code class="language-matlab" data-lang="matlab"><span class="n">h</span> <span class="o">=</span> <span class="n">X</span> <span class="o">*</span> <span class="n">theta</span><span class="p">;</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">h</span> <span class="o">-</span> <span class="n">y</span><span class="p">;</span>
+<span class="n">J</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta</span><span class="o">'</span> <span class="o">*</span> <span class="n">delta</span><span class="p">;</span></code></pre></figure>
+
+<p>梯度下降的更新公式是：</p>
+
+<script type="math/tex; mode=display">\theta\_j:=\theta\_j-\alpha\frac{1}{m}\sum\_{i=1}^m{(h\_\theta(x^{(i)})-y^{(i)})x\_j^{(i)}}</script>
+
+<p>其中，</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\sum\_{i=1}^{m}{(h\_\theta(x^{(i)})-y^{(i)})x\_j^{(i)}}\\\\
+=\begin{bmatrix}
+h\_\theta(x^{(1)})-y^{(1)} &
+h\_\theta(x^{(2)})-y^{(2)} &
+\dots &
+h\_\theta(x^{(i)})-y^{(i)} &
+\dots &
+h\_\theta(x^{(m)})-y^{(m)}
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+x\_j^{(1)} \\\\
+x\_j^{(2)} \\\\
+\vdots \\\\
+x\_j^{(i)} \\\\
+\vdots \\\\
+x\_j^{(m)}
+\end{bmatrix} \\\\
+=\begin{bmatrix}
+h\_\theta(x^{(1)})-y^{(1)} \\\\
+h\_\theta(x^{(2)})-y^{(2)} \\\\
+\vdots \\\\
+h\_\theta(x^{(i)})-y^{(i)} \\\\
+\vdots \\\\
+h\_\theta(x^{(m)})-y^{(m)}
+\end{bmatrix}^T
+\cdot
+\begin{bmatrix}
+x\_j^{(1)} \\\\
+x\_j^{(2)} \\\\
+\vdots \\\\
+x\_j^{(i)} \\\\
+\vdots \\\\
+x\_j^{(m)}
+\end{bmatrix}
+=\delta^T \cdot 
+\begin{bmatrix}
+x\_j^{(1)} \\\\
+x\_j^{(2)} \\\\
+\vdots \\\\
+x\_j^{(i)} \\\\
+\vdots \\\\
+x\_j^{(m)}
+\end{bmatrix} %]]></script>
+
+<p>是\(\delta^T\)乘以\(X\)的第\(j\)列，而且是个实数，转置后仍是他本身。</p>
+
+<script type="math/tex; mode=display">\sum\_{i=1}^{m}{(h\_\theta(x^{(i)})-y^{(i)})x\_j^{(i)}}
+=\left(\delta^T \cdot 
+\begin{bmatrix}
+x\_j^{(1)} \\\\
+x\_j^{(2)} \\\\
+\vdots \\\\
+x\_j^{(i)} \\\\
+\vdots \\\\
+x\_j^{(m)}
+\end{bmatrix}
+\right)^T
+=\begin{bmatrix}
+x\_j^{(1)} \\\\
+x\_j^{(2)} \\\\
+\vdots \\\\
+x\_j^{(i)} \\\\
+\vdots \\\\
+x\_j^{(m)}
+\end{bmatrix}^T \cdot \delta</script>
+
+<script type="math/tex; mode=display">\theta\_j:=\theta\_j-\alpha\frac{1}{m}\sum\_{i=1}^m{(h\_\theta(x^{(i)})-y^{(i)})x\_j^{(i)}}\\\\
+:=\theta\_j-\frac{\alpha}{m}\begin{bmatrix}
+x\_j^{(1)} \\\\
+x\_j^{(2)} \\\\
+\vdots \\\\
+x\_j^{(i)} \\\\
+\vdots \\\\
+x\_j^{(m)}
+\end{bmatrix}^T \cdot \delta</script>
+
+<p>组合成矩阵应该是</p>
+
+<script type="math/tex; mode=display">\theta:=\theta-\frac{\alpha}{m}X^T \cdot \delta</script>
+
+<p>写成MATLAB程序，大概是这个样子的：</p>
+
+<figure class="highlight"><pre><code class="language-matlab" data-lang="matlab"><span class="c1">%h = X * theta;</span>
+<span class="c1">%delta = h - y;</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">-</span> <span class="nb">alpha</span> <span class="p">/</span> <span class="n">m</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="o">'*</span> <span class="n">delta</span><span class="p">);</span></code></pre></figure>
+
+<p>感谢<a href="http://www.mathjax.org">MathJax</a>，让我写出了这么漂亮的公式。</p>
+
+          </section>
+    <div id="disqus_thread" class="inner"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'ytxing'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+ 
+        </div>
+    
+        <!-- FOOTER  -->
+        <div id="footer_wrap" class="outer">
+          <footer class="inner">
+            <p class="copyright">Blog maintained by <a href="https://github.com/xingyongtao">xingyongtao</a></p>
+            <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+          </footer>
+        </div>
+
+    </body>
+
+</html>
